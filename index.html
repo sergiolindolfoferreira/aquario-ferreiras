@@ -263,6 +263,21 @@ if(!db.khDropsTest20261122Imported){
   db.khDropsTest20261122Imported=true;
  }
 }
+/* GH Sera 22/11/2026: seis gotas até verde = 6 °dGH. */
+if(!db.ghDropsTest20261122Imported){
+ const a=db.aquariums.find(a=>a.id==='aq220');
+ if(a&&Array.isArray(a.tests)){
+  const todayTests=a.tests.filter(t=>String(t.date||'').slice(0,10)==='2026-11-22');
+  const alreadyMeasured=todayTests.some(t=>t.gh!==undefined&&t.gh!==null&&t.gh!=='');
+  if(!alreadyMeasured){
+   const target=todayTests.find(t=>t.id==='photo-no2-20261122')||todayTests[0];
+   const note='GH Sera Aqua-Test: 6 gotas até à mudança para verde, equivalente a 6 °dGH.';
+   if(target){target.gh='6';if(!String(target.notes||'').includes('GH Sera Aqua-Test'))target.notes=[target.notes,note].filter(Boolean).join(' | ');}
+   else a.tests.push({id:'gh-drops-20261122',date:'2026-11-22',ph:'',kh:'',gh:'6',no2:'',temp:'',notes:note});
+  }
+  db.ghDropsTest20261122Imported=true;
+ }
+}
 let view='dashboard';const $=x=>document.getElementById(x),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])),val=v=>v===null||v===undefined||v===''?'—':esc(v),nice=d=>d?new Date(d.slice(0,10)+'T12:00').toLocaleDateString('pt-PT'):'—',aq=()=>db.aquariums.find(a=>a.id===db.selected)||db.aquariums[0],save=()=>{try{localStorage.setItem(key,JSON.stringify(db))}catch(e){toast('Não foi possível guardar neste navegador. Exporta os dados.')}},toast=m=>{const el=$('message');el.textContent=m;el.style.display='block';setTimeout(()=>el.style.display='none',3000)};function viewSet(v){view=v;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id===v));$('heading').textContent=({dashboard:'Dashboard',agenda:'Agenda',tests:'Testes da água',fish:'Catálogo de peixes',equipment:'Equipamentos',aquariums:'Os meus aquários',backup:'Dados e segurança'})[v];render()}document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>viewSet(b.dataset.view));$('current').onchange=e=>{db.selected=e.target.value;save();render()};const fields=form=>Object.fromEntries(new FormData(form).entries());function dailyTests(records){
  const result=new Map();
  for(const t of [...records].filter(t=>t&&t.date).sort((a,b)=>String(a.date).localeCompare(String(b.date)))){
