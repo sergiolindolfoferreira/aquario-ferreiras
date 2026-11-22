@@ -305,8 +305,11 @@ if(!db.ghDropsTest20261122Imported){
 }
 /* Dados públicos de alimentação; manter histórico apenas de refeições confirmadas. */
 const feedingData={
- foods:[{id:'tetramin-flakes',name:'TetraMin Flakes',brand:'Tetra',type:'Alimento completo em flocos',since:'2026-11-21',description:'Adquirido em 21/11/2026 na Kiwoko UBBO. Alimento para os peixes que comem à superfície ou na coluna de água.',notes:'Os Ancistrus e as botias Kuhli podem necessitar também de alimentos específicos que afundem.'}],
- history:[]
+ foods:[
+ {id:'ecovita-tropical',name:'Eco Vita Tropical',brand:'Eco Vita',type:'Alimento completo em flocos para peixes de água quente',since:'2026-11-22',active:true,description:'Embalagem Eco Vita Tropical — alimento em flocos, identificada na fotografia enviada em 22/11/2026. É o alimento que está atualmente a ser dado aos peixes.',notes:'Produto em utilização confirmado pelo proprietário; dose e frequência exatas ainda por confirmar.'},
+ {id:'tetramin-flakes',name:'TetraMin Flakes',brand:'Tetra',type:'Alimento completo em flocos',since:'2026-11-21',active:false,description:'Adquirido em 21/11/2026 na Kiwoko UBBO. Consta do inventário, mas não há confirmação de que tenha sido usado na alimentação.',notes:'Os Ancistrus e as botias Kuhli podem necessitar também de alimentos específicos que afundem.'}
+ ],
+ history:[{id:'feeding-20261122-ecovita',date:'2026-11-22',time:'',food:'Eco Vita Tropical (flocos)',amount:'Não quantificada',notes:'Alimentação confirmada pelo proprietário com fotografia do produto. Hora e quantidade não indicadas.'}]
 };
 let view='dashboard';const $=x=>document.getElementById(x),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])),val=v=>v===null||v===undefined||v===''?'—':esc(v),nice=d=>d?new Date(d.slice(0,10)+'T12:00').toLocaleDateString('pt-PT'):'—',aq=()=>db.aquariums.find(a=>a.id===db.selected)||db.aquariums[0],save=()=>{},toast=m=>{const el=$('message');el.textContent=m;el.style.display='block';setTimeout(()=>el.style.display='none',3000)};const navToggle=$('mobileNavToggle'),navBackdrop=$('mobileNavBackdrop'),sidebar=$('siteSidebar');
 function setMobileMenu(open){
@@ -332,7 +335,7 @@ function viewSet(v){setMobileMenu(false);view=v;document.querySelectorAll('[data
  return [...result.values()].sort((a,b)=>b.date.localeCompare(a.date));
 }
 function renderFeeding(){
- $('feedingFoods').innerHTML=feedingData.foods.map(f=>'<div class="item"><div class="row"><strong>'+esc(f.name)+'</strong><span class="tag">'+esc(f.brand)+'</span></div><p class="muted">'+esc(f.type)+' · Desde '+nice(f.since)+'</p><p>'+esc(f.description)+'</p><p class="muted">'+esc(f.notes||'')+'</p></div>').join('')||'<div class="empty">Ainda não existem alimentos registados.</div>';
+ $('feedingFoods').innerHTML=feedingData.foods.map(f=>'<div class="item"><div class="row"><strong>'+esc(f.name)+'</strong><span class="tag">'+esc(f.active?'Em utilização': 'Disponível')+'</span></div><p class="muted">'+esc(f.type)+' · Desde '+nice(f.since)+'</p><p>'+esc(f.description)+'</p><p class="muted">'+esc(f.notes||'')+'</p></div>').join('')||'<div class="empty">Ainda não existem alimentos registados.</div>';
  const entries=[...feedingData.history].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.time||'').localeCompare(String(a.time||'')));
  $('feedingCount').textContent=entries.length+' '+(entries.length===1?'registo':'registos');
  $('feedingHistory').innerHTML=entries.map(x=>'<tr><td>'+nice(x.date)+'</td><td>'+esc(x.time||'—')+'</td><td>'+esc(x.food||'—')+'</td><td>'+esc(x.amount||'Não quantificada')+'</td><td>'+esc(x.notes||'—')+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">Ainda não há refeições confirmadas no histórico. A primeira será registada quando soubermos o que foi dado e quando.</td></tr>';
