@@ -307,7 +307,7 @@ if(!db.ghDropsTest20261122Imported){
 const feedingData={
  foods:[
  {id:'ecovita-tropical',name:'Eco Vita Tropical',brand:'Eco Vita',type:'Alimento completo em flocos para peixes de água quente',since:'2026-11-22',active:true,description:'Embalagem Eco Vita Tropical — alimento em flocos, identificada na fotografia enviada em 22/11/2026. É o alimento que está atualmente a ser dado aos peixes.',notes:'Produto em utilização confirmado pelo proprietário; dose e frequência exatas ainda por confirmar.'},
- {id:'tetramin-flakes',name:'TetraMin Flakes',brand:'Tetra',type:'Alimento completo em flocos',since:'2026-11-21',active:false,description:'Adquirido em 21/11/2026 na Kiwoko UBBO. Consta do inventário, mas não há confirmação de que tenha sido usado na alimentação.',notes:'Os Ancistrus e as botias Kuhli podem necessitar também de alimentos específicos que afundem.'}
+ {id:'tetramin-flakes',name:'TetraMin Flakes',brand:'Tetra',type:'Alimento completo em flocos',since:'2026-11-21',active:false,status:'Novo · por abrir',description:'Embalagem nova, ainda não utilizada. Comprada em 21/11/2026 na Kiwoko UBBO. Reservada para começar a usar apenas quando terminar o Eco Vita Tropical.',notes:'Ainda não fornecido aos peixes: não incluir no histórico alimentar até à primeira utilização confirmada. Os peixes de fundo poderão precisar de alimento próprio que afunde.'}
  ],
  history:[{id:'feeding-20261122-ecovita',date:'2026-11-22',time:'',food:'Eco Vita Tropical (flocos)',amount:'Não quantificada',notes:'Alimentação confirmada pelo proprietário com fotografia do produto. Hora e quantidade não indicadas.'}]
 };
@@ -335,7 +335,7 @@ function viewSet(v){setMobileMenu(false);view=v;document.querySelectorAll('[data
  return [...result.values()].sort((a,b)=>b.date.localeCompare(a.date));
 }
 function renderFeeding(){
- $('feedingFoods').innerHTML=feedingData.foods.map(f=>'<div class="item"><div class="row"><strong>'+esc(f.name)+'</strong><span class="tag">'+esc(f.active?'Em utilização': 'Disponível')+'</span></div><p class="muted">'+esc(f.type)+' · Desde '+nice(f.since)+'</p><p>'+esc(f.description)+'</p><p class="muted">'+esc(f.notes||'')+'</p></div>').join('')||'<div class="empty">Ainda não existem alimentos registados.</div>';
+ $('feedingFoods').innerHTML=feedingData.foods.map(f=>'<div class="item"><div class="row"><strong>'+esc(f.name)+'</strong><span class="tag">'+esc(f.active?'Em utilização': (f.status||'Disponível'))+'</span></div><p class="muted">'+esc(f.type)+' · Desde '+nice(f.since)+'</p><p>'+esc(f.description)+'</p><p class="muted">'+esc(f.notes||'')+'</p></div>').join('')||'<div class="empty">Ainda não existem alimentos registados.</div>';
  const entries=[...feedingData.history].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.time||'').localeCompare(String(a.time||'')));
  $('feedingCount').textContent=entries.length+' '+(entries.length===1?'registo':'registos');
  $('feedingHistory').innerHTML=entries.map(x=>'<tr><td>'+nice(x.date)+'</td><td>'+esc(x.time||'—')+'</td><td>'+esc(x.food||'—')+'</td><td>'+esc(x.amount||'Não quantificada')+'</td><td>'+esc(x.notes||'—')+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">Ainda não há refeições confirmadas no histórico. A primeira será registada quando soubermos o que foi dado e quando.</td></tr>';
