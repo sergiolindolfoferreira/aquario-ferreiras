@@ -231,6 +231,23 @@ if(!db.no2PhotoTest20261122Imported){
   db.no2PhotoTest20261122Imported=true;
  }
 }
+/* pH Sera, 22/11/2026: adicionar ao dia sem duplicar nem substituir leituras introduzidas pelo utilizador. */
+if(!db.phPhotoTest20261122Imported){
+ const aquarium=db.aquariums.find(a=>a.id==='aq220');
+ if(aquarium&&Array.isArray(aquarium.tests)){
+  const todays=aquarium.tests.filter(t=>String(t.date||'').slice(0,10)==='2026-11-22');
+  const hasPh=todays.some(t=>t.ph!==undefined&&t.ph!==null&&t.ph!=='');
+  if(!hasPh){
+   const target=todays.find(t=>t.id==='photo-no2-20261122')||todays[0];
+   if(target){
+    target.ph='8.0';
+    const observation='pH Sera Aqua-Test Set: leitura visual aproximada de 8,0 na escala colorimétrica; confirmar se necessário.';
+    if(!String(target.notes||'').includes('pH Sera Aqua-Test Set'))target.notes=[target.notes,observation].filter(Boolean).join(' | ');
+   }else aquarium.tests.push({id:'photo-ph-20261122',date:'2026-11-22',ph:'8.0',kh:'',gh:'',no2:'',temp:'',notes:'pH Sera Aqua-Test Set: leitura visual aproximada de 8,0 na escala colorimétrica.'});
+  }
+  db.phPhotoTest20261122Imported=true;
+ }
+}
 let view='dashboard';const $=x=>document.getElementById(x),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])),val=v=>v===null||v===undefined||v===''?'—':esc(v),nice=d=>d?new Date(d.slice(0,10)+'T12:00').toLocaleDateString('pt-PT'):'—',aq=()=>db.aquariums.find(a=>a.id===db.selected)||db.aquariums[0],save=()=>{try{localStorage.setItem(key,JSON.stringify(db))}catch(e){toast('Não foi possível guardar neste navegador. Exporta os dados.')}},toast=m=>{const el=$('message');el.textContent=m;el.style.display='block';setTimeout(()=>el.style.display='none',3000)};function viewSet(v){view=v;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id===v));$('heading').textContent=({dashboard:'Dashboard',agenda:'Agenda',tests:'Testes da água',fish:'Catálogo de peixes',equipment:'Equipamentos',aquariums:'Os meus aquários',backup:'Dados e segurança'})[v];render()}document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>viewSet(b.dataset.view));$('current').onchange=e=>{db.selected=e.target.value;save();render()};const fields=form=>Object.fromEntries(new FormData(form).entries());function dailyTests(records){
  const result=new Map();
  for(const t of [...records].filter(t=>t&&t.date).sort((a,b)=>String(a.date).localeCompare(String(b.date)))){
